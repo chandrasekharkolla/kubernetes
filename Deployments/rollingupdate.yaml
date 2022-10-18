@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "4"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"creationTimestamp":null,"labels":{"app":"firstdeploy"},"name":"firstdeploy","namespace":"default"},"spec":{"replicas":7,"selector":{"matchLabels":{"app":"firstdeploy"}},"strategy":{},"template":{"metadata":{"creationTimestamp":null,"labels":{"app":"firstdeploy"}},"spec":{"containers":[{"image":"nginx:perl","name":"nginx","resources":{}}]}}},"status":{}}
+  creationTimestamp: "2022-10-18T04:55:40Z"
+  generation: 5
+  labels:
+    app: firstdeploy
+  name: firstdeploy
+  namespace: default
+  resourceVersion: "1706199"
+  uid: 77751e7c-20b2-47f5-8837-81c8921b04d1
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: firstdeploy
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: firstdeploy
+    spec:
+      containers:
+      - image: httpd
+        imagePullPolicy: Always
+        name: nginx
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 3
+  conditions:
+  - lastTransitionTime: "2022-10-18T04:56:27Z"
+    lastUpdateTime: "2022-10-18T04:56:27Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2022-10-18T04:55:40Z"
+    lastUpdateTime: "2022-10-18T05:08:13Z"
+    message: ReplicaSet "firstdeploy-5749dcbc79" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 5
+  readyReplicas: 7
+  replicas: 7
+  updatedReplicas: 7
