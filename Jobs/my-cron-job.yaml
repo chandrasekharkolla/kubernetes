@@ -15,7 +15,9 @@ spec:
         spec:
           containers:
           - command:
-            - date
+            - /bin/sh
+            - sleep
+            - "60"
             image: busybox
             name: my-cron-job
             resources: {}
