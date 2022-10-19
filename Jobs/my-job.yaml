@@ -11,7 +11,7 @@ spec:
       containers:
       - image: busybox
         name: my-job
-        command:
+        args:
         - "sleep"
         - "60"
         resources: {}
