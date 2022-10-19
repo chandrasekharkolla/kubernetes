@@ -15,7 +15,6 @@ spec:
         spec:
           containers:
           - command:
-            - /bin/sh
             - sleep
             - "60"
             image: busybox
