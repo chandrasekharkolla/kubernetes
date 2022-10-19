@@ -19,6 +19,6 @@ spec:
     spec:
       containers:
       - image: nginx
-        name: nginx
+        name: nginx2:alpine
         resources: {}
 status: {}
