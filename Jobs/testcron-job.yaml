@@ -13,9 +13,9 @@ spec:
         metadata:
           creationTimestamp: null
         spec:
+          activeDeadlineSeconds: 10
           containers:
-          - command:
-            - date
+          - command: ["curl", "google.com/ping"]
             image: busybox
             name: test-job
             resources: {}

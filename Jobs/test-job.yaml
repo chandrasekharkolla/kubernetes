@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  creationTimestamp: null
+  name: temp-job
+spec:
+  template:
+    metadata:
+      creationTimestamp: null
+      name: test-job
+    spec:
+      activeDeadlineSeconds: 10
+      containers:
+      - command: ["curl", "google.com/ping"]
+        image: busybox
+        name: test-job
+        resources: {}        
+      restartPolicy: Never
