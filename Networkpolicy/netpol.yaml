@@ -1,0 +1,19 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: netpoltest
+spec:
+  ingress:
+  - from:
+    - podSelector: 
+        matchExpressions:
+        - key: app
+          operator: In
+          values:
+          - net-tesit
+  podSelector:
+    matchExpressions:
+    - key: app
+      operator: NotIn
+      values:
+      - test
