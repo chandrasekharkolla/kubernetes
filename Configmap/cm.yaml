@@ -1,0 +1,52 @@
+---
+apiVersion: v1
+data:
+  fluentd.conf: "<source>\n      type tail\n      format none\n      path /var/log/1.log\n
+    \     pos_file /var/log/1.log.pos\n      tag PHP\n    </source>\n \n    <source>\n
+    \     type tail\n      format none\n      path /var/log/2.log\n      pos_file
+    /var/log/2.log.pos\n      tag JAVA\n    </source>\n \n    <match **>\n       @type
+    file\n       path /var/log/fluent/access\n    </match>\n"
+kind: ConfigMap
+metadata:
+  name: fluentd-config
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kplabs-adapter-logging
+spec:
+  containers:
+  - image: k8s.gcr.io/fluentd-gcp:1.30
+    name: adapter
+    env:
+    - name: FLUENTD_ARGS
+      value: "-c /etc/fluentd-config/fluentd.conf"
+    volumeMounts:
+    - name: test
+      mountPath: /var/log
+    - name: cm
+      mountPath: /etc/fluentd-config/
+  - volumeMounts:
+    - mountPath: /var/log
+      name: test
+    name: curl-container
+    image: busybox
+    args:
+    - /bin/sh
+    - -c
+    - >
+      i=0;
+      while true;
+      do
+        echo "$i: $(date)" >> /var/log/1.log;
+        echo "$(date) INFO $i" >> /var/log/2.log;
+        i=$((i+1));
+        sleep 1;
+      done
+  volumes:
+  - name: test
+    emptyDir: {}
+  - name: cm
+    configMap:
+      name: fluentd-config
