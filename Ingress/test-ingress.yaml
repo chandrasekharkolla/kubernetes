@@ -106,7 +106,7 @@ metadata:
 spec:
   ports:
     - port: 80
-      targetPort: 80
+      targetPort: 8080
       protocol: TCP
   type: ClusterIP
   selector:
@@ -132,7 +132,7 @@ spec:
             service:
               name: test
               port:
-                number: 80
+                number: 8080
     - http:
         paths:
         - path: /hello
