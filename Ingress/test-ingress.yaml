@@ -126,7 +126,7 @@ metadata:
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/load-balancer-name: ALB-ingress
+    alb.ingress.kubernetes.io/load-balancer-name: alb-ingress
 spec:
   ingressClassName: alb
   rules:
