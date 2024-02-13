@@ -31,8 +31,6 @@ kind: Service
 metadata:
   namespace: game-2048
   name: nginx
-  annotations:
-    alb.ingress.kubernetes.io/healthcheck-path: /
 spec:
   ports:
     - port: 80
@@ -71,6 +69,7 @@ metadata:
   name: hello
   annotations:
     alb.ingress.kubernetes.io/healthcheck-path: /hello
+    alb.ingress.kubernetes.io/backend-protocol: HTTP
 spec:
   ports:
     - port: 80
@@ -100,7 +99,7 @@ spec:
         imagePullPolicy: Always
         name: test
         ports:
-        - containerPort: 8080
+        - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
@@ -109,10 +108,11 @@ metadata:
   name: test
   annotations:
     alb.ingress.kubernetes.io/healthcheck-path: /test
+    alb.ingress.kubernetes.io/backend-protocol: HTTP
 spec:
   ports:
     - port: 80
-      targetPort: 8080
+      targetPort: 80
       protocol: TCP
   type: ClusterIP
   selector:
@@ -126,6 +126,7 @@ metadata:
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/load-balancer-name: ALB-ingress
 spec:
   ingressClassName: alb
   rules:
@@ -137,7 +138,7 @@ spec:
             service:
               name: test
               port:
-                number: 8080
+                number: 80
     - http:
         paths:
         - path: /hello
