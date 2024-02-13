@@ -31,8 +31,8 @@ kind: Service
 metadata:
   namespace: game-2048
   name: nginx
-annotations:
-  alb.ingress.kubernetes.io/healthcheck-path: /
+  annotations:
+    alb.ingress.kubernetes.io/healthcheck-path: /
 spec:
   ports:
     - port: 80
@@ -69,8 +69,8 @@ kind: Service
 metadata:
   namespace: game-2048
   name: hello
-annotations:
-  alb.ingress.kubernetes.io/healthcheck-path: /hello
+  annotations:
+    alb.ingress.kubernetes.io/healthcheck-path: /hello
 spec:
   ports:
     - port: 80
@@ -107,8 +107,8 @@ kind: Service
 metadata:
   namespace: game-2048
   name: test
-annotations:
-  alb.ingress.kubernetes.io/healthcheck-path: /test
+  annotations:
+    alb.ingress.kubernetes.io/healthcheck-path: /test
 spec:
   ports:
     - port: 80
