@@ -25,8 +25,6 @@ generate "provider" {
 EOF
 }
 
-# iam_role = "arn:aws:iam::${local.account_vars.locals.account_number}:role/devops-iac"
-
 remote_state {
   backend = "s3"
 
@@ -73,9 +71,5 @@ inputs = {
   auth_role_arn                    = ""
   username                         = ""
   region                           = local.region
-
 }
 
-/* vpc_id                   = "vpc-0eb2d467a125f14f3"
-subnet_ids               = ["subnet-04cb1083a69a6a3eb", "subnet-03c73e1026406d9a8", "subnet-0f1fb46d719c37a6c"]
-control_plane_subnet_ids = ["subnet-04cb1083a69a6a3eb", "subnet-03c73e1026406d9a8", "subnet-0f1fb46d719c37a6c"] */

@@ -52,7 +52,7 @@ module "eks" {
 
   eks_managed_node_groups = {
     default = {
-      instance_types           = ["m5.large"]
+      instance_types           = ["t3.medium"]
       force_update_version     = true
       release_version          = data.aws_ami.eks_opt_linux_ami.image_id
       use_name_prefix          = false
