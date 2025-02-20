@@ -1,0 +1,781 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: example
+spec:
+  compositeTypeRef:
+    apiVersion: custom-api.example.org/v1alpha1
+    kind: xDatabase
+  mode: Pipeline
+  pipeline:
+  - step: patch-and-transform
+    functionRef:
+      name: function-patch-and-transform
+    input:
+      apiVersion: pt.fn.crossplane.io/v1beta1
+      kind: Resources
+      resources:
+      - name: vpc
+        base:
+          apiVersion: ec2.aws.upbound.io/v1beta1
+          kind: VPC
+          spec:
+            forProvider:
+              region: us-east-1
+              cidrBlock: 10.0.0.0/16
+              enableDnsSupport: true
+              enableDnsHostnames: true
+      - name: subnet-a
+        base:
+          apiVersion: ec2.aws.upbound.io/v1beta1
+          kind: Subnet
+          metadata:
+            labels:
+              zone: us-east-1a
+          spec:
+            forProvider:
+              region: us-east-1
+              availabilityZone: us-east-1a
+              cidrBlock: 10.0.0.0/24
+              vpcIdSelector:
+                matchControllerRef: true
+        patches:
+        - fromFieldPath: metadata.name
+          toFieldPath: metadata.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-a"
+                type: Format
+      - name: subnet-b
+        base:
+          apiVersion: ec2.aws.upbound.io/v1beta1
+          kind: Subnet
+          metadata:
+            labels:
+              zone: us-east-1b
+          spec:
+            forProvider:
+              region: us-east-1
+              availabilityZone: us-east-1b
+              cidrBlock: 10.0.1.0/24
+              vpcIdSelector:
+                matchControllerRef: true
+        patches:
+        - fromFieldPath: metadata.name
+          toFieldPath: metadata.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-b"
+                type: Format
+      - name: subnet-c
+        base:
+          apiVersion: ec2.aws.upbound.io/v1beta1
+          kind: Subnet
+          metadata:
+            labels:
+              zone: us-east-1c
+          spec:
+            forProvider:
+              region: us-east-1
+              availabilityZone: us-east-1c
+              cidrBlock: 10.0.2.0/24
+              vpcIdSelector:
+                matchControllerRef: true
+        patches:
+        - fromFieldPath: metadata.name
+          toFieldPath: metadata.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-c"
+                type: Format
+      - name: subnetgroup
+        base:
+          apiVersion: rds.aws.upbound.io/v1beta1
+          kind: SubnetGroup
+          spec:
+            forProvider:
+              region: us-east-1
+              description: Subnet group for RDS Instances
+              subnetIdSelector:
+                matchControllerRef: true
+      - name: gateway
+        base:
+          apiVersion: ec2.aws.upbound.io/v1beta1
+          kind: InternetGateway
+          spec:
+            forProvider:
+              region: us-east-1
+              vpcIdSelector:
+                matchControllerRef: true
+      - name: routeTable
+        base:
+          apiVersion: ec2.aws.upbound.io/v1beta1
+          kind: RouteTable
+          spec:
+            forProvider:
+              region: us-east-1
+              vpcIdSelector:
+                matchControllerRef: true
+      - name: route
+        base:
+          apiVersion: ec2.aws.upbound.io/v1beta1
+          kind: Route
+          spec:
+            forProvider:
+              region: us-east-1
+              routeTableIdSelector:
+                matchControllerRef: true
+              destinationCidrBlock: 0.0.0.0/0
+              gatewayIdSelector:
+                matchControllerRef: true
+      - name: mainRouteTableAssociation
+        base:
+          apiVersion: ec2.aws.upbound.io/v1beta1
+          kind: MainRouteTableAssociation
+          spec:
+            forProvider:
+              region: us-east-1
+              routeTableIdSelector:
+                matchControllerRef: true
+              vpcIdSelector:
+                matchControllerRef: true
+      - name: routeTableAssociation1a
+        base:
+          apiVersion: ec2.aws.upbound.io/v1beta1
+          kind: RouteTableAssociation
+          spec:
+            forProvider:
+              region: us-east-1
+              routeTableIdSelector:
+                matchControllerRef: true
+              subnetIdSelector:
+                matchControllerRef: true
+                matchLabels:
+                  zone: us-east-1a
+        patches:
+        - fromFieldPath: metadata.name
+          toFieldPath: metadata.name
+          transforms:
+          - type: string
+            string:
+              fmt: '%s-1a'
+              type: Format
+      - name: routeTableAssociation1b
+        base:
+          apiVersion: ec2.aws.upbound.io/v1beta1
+          kind: RouteTableAssociation
+          spec:
+            forProvider:
+              region: us-east-1
+              routeTableIdSelector:
+                matchControllerRef: true
+              subnetIdSelector:
+                matchControllerRef: true
+                matchLabels:
+                  zone: us-east-1b
+        patches:
+        - fromFieldPath: metadata.name
+          toFieldPath: metadata.name
+          transforms:
+          - type: string
+            string:
+              fmt: '%s-1b'
+              type: Format
+      - name: routeTableAssociation1c
+        base:
+          apiVersion: ec2.aws.upbound.io/v1beta1
+          kind: RouteTableAssociation
+          spec:
+            forProvider:
+              region: us-east-1
+              routeTableIdSelector:
+                matchControllerRef: true
+              subnetIdSelector:
+                matchControllerRef: true
+                matchLabels:
+                  zone: us-east-1c
+        patches:
+        - fromFieldPath: metadata.name
+          toFieldPath: metadata.name
+          transforms:
+          - type: string
+            string:
+              fmt: '%s-1c'
+              type: Format
+      - name: securityGroup
+        base:
+          apiVersion: ec2.aws.upbound.io/v1beta1
+          kind: SecurityGroup
+          metadata:
+            labels:
+              testing.upbound.io/example-name: example-sg
+          spec:
+            forProvider:
+              description: Security group to allow all traffic from the internet on port 5432
+              region: us-east-1
+              vpcIdSelector:
+                matchControllerRef: true
+        patches:
+        - fromFieldPath: metadata.name
+          toFieldPath: metadata.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-security-group"
+                type: Format
+      - name: securityGroupRule
+        base:
+          apiVersion: ec2.aws.upbound.io/v1beta1
+          kind: SecurityGroupRule
+          spec:
+            forProvider:
+              description: Allow all traffic from the internet on port 5432
+              region: us-east-1
+              type: ingress
+              fromPort: 5432
+              toPort: 5432
+              protocol: tcp
+              cidrBlocks:
+                - 0.0.0.0/0
+              securityGroupIdSelector:
+                matchControllerRef: true
+        patches:
+        - fromFieldPath: metadata.name
+          toFieldPath: metadata.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-security-group-rule"
+                type: Format
+      - name: xparametergroup
+        base:
+          apiVersion: rds.aws.upbound.io/v1beta1
+          kind: ParameterGroup
+          metadata:
+            annotations:
+              meta.upbound.io/example-id: rds/v1beta1/cluster
+            labels:
+              testing.upbound.io/example-name: example-ci-cluster-instance
+            name: example-parametergroup-ci-cluster-instance
+          spec:
+            forProvider:
+              description: example
+              family: aurora-postgresql14
+              # parameter:
+              #   - applyMethod: immediate
+              #     name: application_name
+              #     value: example-cluster-instance
+              region: us-east-2
+            providerConfigRef:
+              name: default
+        patches:
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.region
+          toFieldPath: spec.forProvider.region
+        - type: FromCompositeFieldPath
+          fromFieldPath: metadata.name
+          toFieldPath: metadata.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-parameter-group"
+                type: Format
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.engine
+              - fromFieldPath: spec.engineVersion
+            strategy: string
+            string:
+              fmt: "%s%s"
+          toFieldPath: spec.forProvider.family
+      - name: xclusterparametergroup
+        base:
+          apiVersion: rds.aws.upbound.io/v1beta1
+          kind: ClusterParameterGroup
+          metadata:
+            annotations:
+              meta.upbound.io/example-id: rds/v1beta1/clusterinstance
+            labels:
+              testing.upbound.io/example-name: example-ci
+            name: example-clusterparametergroup-ci
+          spec:
+            forProvider:
+              description: RDS default cluster parameter group
+              family: aurora-postgresql16
+              # parameter:
+              #   - name: apg_plan_mgmt.capture_plan_baselines
+              #     value: manual
+              region: us-east-1
+            providerConfigRef:
+              name: default
+        patches:
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.region
+          toFieldPath: spec.forProvider.region
+        - type: CombineFromComposite
+          combine:
+            variables:
+              - fromFieldPath: spec.engine
+              - fromFieldPath: spec.engineVersion
+            strategy: string
+            string:
+              fmt: "%s%s"
+          toFieldPath: spec.forProvider.family
+        - type: FromCompositeFieldPath
+          fromFieldPath: metadata.name
+          toFieldPath: metadata.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-cluster-parameter-group"
+                type: Format
+      - name: xcluster
+        base:
+          apiVersion: rds.aws.upbound.io/v1beta2
+          kind: Cluster
+          metadata:
+            annotations:
+              meta.upbound.io/example-id: rds/v1beta2/cluster
+            name: example
+          spec:
+            forProvider:
+              databaseName: example
+              # dbClusterInstanceClass: db.t3.micro
+              # clusterMembers:
+              enabledCloudwatchLogsExports:
+                - postgresql
+              iamDatabaseAuthenticationEnabled: true
+              autoGeneratePassword: true
+              dbClusterParameterGroupNameSelector:
+                matchControllerRef: true
+              dbInstanceParameterGroupNameSelector:
+                matchControllerRef: true
+              manageMasterUserPassword: true
+              dbSubnetGroupNameSelector:
+                matchControllerRef: true
+              vpcSecurityGroupIdSelector:
+                matchControllerRef: true
+              tags:
+                Name: example
+              engine: aurora-postgresql
+
+              # engineMode: db.serverless
+              # masterPasswordSecretRef:
+              #   key: password
+              #   name: sample-cluster-password
+              #   namespace: crossplane-system
+              masterUsername: cpadmin
+              # region: us-east-1
+              skipFinalSnapshot: true
+            writeConnectionSecretToRef:
+              name: sample-rds-cluster-secret
+              namespace: crossplane-system
+            providerConfigRef:
+              name: default
+        patches:
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.region
+          toFieldPath: spec.forProvider.region
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.engine
+          toFieldPath: spec.forProvider.engine
+        - type: FromCompositeFieldPath
+          fromFieldPath: metadata.name
+          toFieldPath: metadata.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-cluster"
+                type: Format
+        # - fromFieldPath: spec.dbClusterInstanceClass
+        #   toFieldPath: spec.forProvider.dbClusterInstanceClass
+        #   transforms:
+        #   - type: map
+        #     map:
+        #       small: db.t3.micro
+        #       medium: db.t4g.micro
+        #       large: db.t3.medium
+      - name: xclusterInstance
+        base:
+          apiVersion: rds.aws.upbound.io/v1beta1
+          kind: ClusterInstance
+          metadata:
+            annotations:
+              meta.upbound.io/example-id: rds/v1beta1/clusterinstance
+            labels:
+              testing.upbound.io/example-name: example
+            name: example
+          spec:
+            forProvider:
+              clusterIdentifierSelector:
+                matchControllerRef: true
+              engine: aurora-postgresql
+              instanceClass: db.t3.medium
+              publiclyAccessible: true
+              dbSubnetGroupNameSelector:
+                matchControllerRef: true
+        patches:
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.region
+          toFieldPath: spec.forProvider.region
+        - type: FromCompositeFieldPath
+          fromFieldPath: metadata.name
+          toFieldPath: metadata.name
+      # - name: rdsinstance
+      #   base:
+      #     apiVersion: rds.aws.upbound.io/v1beta1
+      #     kind: Instance
+      #     spec:
+      #       forProvider:
+      #         identifierPrefix: my-rds
+      #         instanceClass: db.t3.medium
+      #         applyImmediately: true
+      #         manageMasterUserPassword: true
+      #         dbSubnetGroupNameSelector:
+      #           matchControllerRef: true
+      #         vpcSecurityGroupIdSelector:
+      #           matchControllerRef: true
+      #         username: cpadmin
+      #         engine: postgres
+      #         skipFinalSnapshot: true
+      #         publiclyAccessible: true
+      #         allocatedStorage: 200
+      #   patches:
+      #   - type: FromCompositeFieldPath
+      #     fromFieldPath: spec.region
+      #     toFieldPath: spec.forProvider.region
+        # - fromFieldPath: spec.dbClusterInstanceClass
+        #   toFieldPath: spec.forProvider.instanceClass
+        #   transforms:
+        #   - type: map
+        #     map:
+        #       small: db.t3.micro
+        #       medium: db.t4g.micro
+        #       large: db.t3.medium
+        - fromFieldPath: spec.engineVersion
+          toFieldPath: spec.forProvider.engineVersion
+        - fromFieldPath: spec.engine
+          toFieldPath: spec.forProvider.engine
+        # - fromFieldPath: spec.id
+        #   toFieldPath: spec.forProvider.passwordSecretRef.name
+        #   transforms:
+        #   - type: string
+        #     string:
+        #       fmt: "%s-password"
+        #       type: Format
+        # - fromFieldPath: spec.claimRef.namespace
+        #   toFieldPath: spec.forProvider.passwordSecretRef.namespace
+      # - name: sql-secret
+      #   base:
+      #     apiVersion: kubernetes.crossplane.io/v1alpha1
+      #     kind: Object
+      #     metadata:
+      #       name: sql-secret
+      #     spec:
+      #       forProvider:
+      #         manifest:
+      #           apiVersion: v1
+      #           kind: Secret
+      #           metadata:
+      #             namespace: crossplane-system
+      #           data:
+      #             port: NTQzMg==
+      #       references:
+      #       - patchesFrom:
+      #           apiVersion: rds.aws.upbound.io/v1beta1
+      #           kind: Instance
+      #           namespace: crossplane-system
+      #           fieldPath: spec.forProvider.username
+      #         toFieldPath: stringData.username
+      #       - patchesFrom:
+      #           apiVersion: v1
+      #           kind: Secret
+      #           namespace: crossplane-system
+      #           fieldPath: data.password
+      #         toFieldPath: data.password
+      #       - patchesFrom:
+      #           apiVersion: rds.aws.upbound.io/v1beta1
+      #           kind: Instance
+      #           namespace: crossplane-system
+      #           fieldPath: status.atProvider.address
+      #         toFieldPath: stringData.endpoint
+      #   patches:
+      #   - fromFieldPath: spec.id
+      #     toFieldPath: spec.references[0].patchesFrom.name
+      #   - fromFieldPath: spec.id
+      #     toFieldPath: spec.references[1].patchesFrom.name
+      #     transforms:
+      #     - type: string
+      #       string:
+      #         fmt: "%s-password"
+      #         type: Format
+      #   - fromFieldPath: spec.claimRef.namespace
+      #     toFieldPath: spec.references[1].patchesFrom.namespace
+      #   - fromFieldPath: spec.id
+      #     toFieldPath: spec.references[2].patchesFrom.name
+      #   - fromFieldPath: spec.id
+      #     toFieldPath: spec.forProvider.manifest.metadata.name
+      #   - fromFieldPath: spec.claimRef.namespace
+      #     toFieldPath: spec.forProvider.manifest.metadata.namespace
+      - name: xsecret
+        base:
+          apiVersion: secretsmanager.aws.upbound.io/v1beta1
+          kind: Secret
+          metadata:
+            name: sample-rds
+            # namespace: crossplane-system
+          spec:
+            forProvider:
+              name: example-withreplica-random
+              region: "us-east-1"
+            providerConfigRef:
+              name: default
+        patches:
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.region
+          toFieldPath: spec.forProvider.region
+        - type: FromCompositeFieldPath
+          fromFieldPath: metadata.name
+          toFieldPath: spec.forProvider.name
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-secret"
+                type: Format
+      - name: xsecretversion
+        base:
+          apiVersion: secretsmanager.aws.upbound.io/v1beta1
+          kind: SecretVersion
+          metadata:
+            labels:
+              testing.upbound.io/example-name: secretsmanager
+            name: example
+          spec:
+            forProvider:
+              secretIdSelector:
+                matchControllerRef: true
+              secretStringSecretRef:
+                key: key1
+                name: test
+                namespace: crossplane-system
+        patches:
+        - type: FromCompositeFieldPath
+          fromFieldPath: spec.region
+          toFieldPath: spec.forProvider.region
+        # - type: FromCompositeFieldPath
+        #   fromFieldPath: metadata.name
+        #   toFieldPath: metadata.name
+        #   transforms:
+        #     - type: string
+        #       string:
+        #         fmt: "%s-secret-version"
+        #         type: Format
+  - step: auto-ready
+    functionRef:
+      name: function-auto-ready
+
+
+
+
+
+
+
+
+
+
+#       - name: xclusterparametergroup
+#         base:
+#           apiVersion: rds.aws.upbound.io/v1beta1
+#           kind: ClusterParameterGroup
+#           metadata:
+#             annotations:
+#               meta.upbound.io/example-id: rds/v1beta1/clusterinstance
+#             labels:
+#               testing.upbound.io/example-name: example-ci
+#             name: example-clusterparametergroup-ci
+#           spec:
+#             forProvider:
+#               description: RDS default cluster parameter group
+#               family: aurora-postgresql16
+#               parameter:
+#                 - name: apg_plan_mgmt.capture_plan_baselines
+#                   value: manual
+#               region: us-east-1
+#             providerConfigRef:
+#               name: default
+#         patches:
+#         - type: FromCompositeFieldPath
+#           fromFieldPath: spec.desiredRegion
+#           toFieldPath: spec.forProvider.region
+#       - name: xcluster
+#         base:
+#           apiVersion: rds.aws.upbound.io/v1beta2
+#           kind: Cluster
+#           metadata:
+#             annotations:
+#               meta.upbound.io/example-id: rds/v1beta2/cluster
+#             name: example
+#           spec:
+#             forProvider:
+#               autoGeneratePassword: true
+#               dbClusterParameterGroupNameSelector:
+#                 matchLabels:
+#                   testing.upbound.io/example-name: example-ci
+#               dbInstanceParameterGroupNameSelector:
+#                 matchLabels:
+#                   testing.upbound.io/example-name: example-ci-cluster-instance
+#               engine: aurora-postgresql
+#               masterPasswordSecretRef:
+#                 key: password
+#                 name: sample-cluster-password
+#                 namespace: crossplane-system
+#               masterUsername: cpadmin
+#               region: us-east-1
+#               skipFinalSnapshot: true
+#             writeConnectionSecretToRef:
+#               name: sample-rds-cluster-secret
+#               namespace: crossplane-system
+#             providerConfigRef:
+#               name: default
+#         patches:
+#         - type: FromCompositeFieldPath
+#           fromFieldPath: spec.desiredRegion
+#           toFieldPath: spec.forProvider.region
+
+
+
+
+
+
+
+
+
+
+
+
+# # apiVersion: rds.aws.upbound.io/v1beta1
+# # kind: ParameterGroup
+# # metadata:
+# #   annotations:
+# #     meta.upbound.io/example-id: rds/v1beta1/cluster
+# #   labels:
+# #     testing.upbound.io/example-name: example-ci-cluster-instance
+# #   name: example-parametergroup-ci-cluster-instance
+# # spec:
+# #   forProvider:
+# #     description: example
+# #     family: aurora-postgresql16
+# #     parameter:
+# #       - applyMethod: immediate
+# #         name: application_name
+# #         value: example-cluster-instance
+# #     region: us-east-1
+# #   providerConfigRef:
+# #     name: default
+# # ---
+# # apiVersion: rds.aws.upbound.io/v1beta1
+# # kind: ClusterParameterGroup
+# # metadata:
+# #   annotations:
+# #     meta.upbound.io/example-id: rds/v1beta1/clusterinstance
+# #   labels:
+# #     testing.upbound.io/example-name: example-ci
+# #   name: example-clusterparametergroup-ci
+# # spec:
+# #   forProvider:
+# #     description: RDS default cluster parameter group
+# #     family: aurora-postgresql16
+# #     parameter:
+# #       - name: apg_plan_mgmt.capture_plan_baselines
+# #         value: manual
+# #     region: us-east-1
+# #   providerConfigRef:
+# #     name: default
+# # ---
+# # apiVersion: rds.aws.upbound.io/v1beta2
+# # kind: Cluster
+# # metadata:
+# #   annotations:
+# #     meta.upbound.io/example-id: rds/v1beta2/cluster
+# #   name: example
+# # spec:
+# #   forProvider:
+# #     autoGeneratePassword: true
+# #     dbClusterParameterGroupNameSelector:
+# #       matchLabels:
+# #         testing.upbound.io/example-name: example-ci
+# #     dbInstanceParameterGroupNameSelector:
+# #       matchLabels:
+# #         testing.upbound.io/example-name: example-ci-cluster-instance
+# #     engine: aurora-postgresql
+# #     masterPasswordSecretRef:
+# #       key: password
+# #       name: sample-cluster-password
+# #       namespace: crossplane-system
+# #     masterUsername: cpadmin
+# #     region: us-east-1
+# #     skipFinalSnapshot: true
+# #   writeConnectionSecretToRef:
+# #     name: sample-rds-cluster-secret
+# #     namespace: crossplane-system
+# #   providerConfigRef:
+# #     name: default
+
+
+
+# - name: rdsinstance
+      #   base:
+      #     apiVersion: rds.aws.upbound.io/v1beta1
+      #     kind: Instance
+      #     spec:
+      #       forProvider:
+      #         region: us-east-1
+      #         # dbSubnetGroupNameSelector:
+      #         #   matchControllerRef: true
+      #         # vpcSecurityGroupIdSelector:
+      #         #   matchControllerRef: true
+      #         username: chandra
+      #         engine: postgres
+      #         skipFinalSnapshot: true
+      #         publiclyAccessible: true
+      #         allocatedStorage: 20
+      #         passwordSecretRef:
+      #           key: password
+      #   patches:
+      #   - fromFieldPath: spec.parameters.size
+      #     toFieldPath: spec.forProvider.instanceClass
+      #     transforms:
+      #     - type: map
+      #       map:
+      #         small: db.t3.micro
+      #         medium: db.t4g.micro
+      #         large: db.t3.medium
+      # - name: xsecret
+      #   base:
+      #     apiVersion: secretsmanager.aws.upbound.io/v1beta1
+      #     kind: Secret
+      #     metadata:
+      #       name: sample-rds
+      #       # namespace: crossplane-system
+      #     spec:
+      #       forProvider:
+      #         name: example-withreplica-random
+      #         region: "us-east-1"
+      #       providerConfigRef:
+      #         name: default
+      #   patches:
+      #   - type: FromCompositeFieldPath
+      #     fromFieldPath: spec.region
+      #     toFieldPath: spec.forProvider.region
+      #   - type: FromCompositeFieldPath
+      #     fromFieldPath: metadata.name
+      #     toFieldPath: spec.forProvider.name
+      #     transforms:
+      #       - type: string
+      #         string:
+      #           fmt: "%s-secret"
+      #           type: Format

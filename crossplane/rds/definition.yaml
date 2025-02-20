@@ -1,0 +1,69 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xdatabases.custom-api.example.org
+spec:
+  group: custom-api.example.org
+  names:
+    kind: xDatabase
+    plural: xdatabases
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              region:
+                type: string            
+              engine:
+                type: string
+              engineVersion:
+                type: string
+              dbClusterInstanceClass:
+                type: string
+              storageEncrypted:
+                type: boolean
+              storageType:
+                type: string
+              storageSize:
+                type: integer
+              parameterGroup:
+                type: string
+              subnetGroup:
+                type: string
+              securityGroups:
+                type: array
+                items:
+                  type: string
+              tags:
+                type: object
+                additionalProperties:
+                  type: string
+              masterUsername:
+                type: string
+              masterPassword:
+                type: string
+              autoGeneratePassword:
+                type: boolean
+            required:
+              - region
+              # - engine
+              # - engineVersion
+              # - instanceClass
+              # - storageEncrypted
+              # - storageType
+              # - storageSize
+              # - parameterGroup
+              # - subnetGroup
+              # - securityGroups
+              # - masterUsername
+              # - masterPassword
+              # - autoGeneratePassword
+  claimNames:
+    kind: DatabaseClaim
+    plural: databaseclaims

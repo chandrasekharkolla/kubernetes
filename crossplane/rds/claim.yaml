@@ -1,0 +1,90 @@
+apiVersion: custom-api.example.org/v1alpha1
+kind: DatabaseClaim
+metadata:
+  name: my-rds
+  namespace: rds
+spec:
+  region: us-east-1
+  engine: aurora-postgresql
+  engineVersion: "16"
+  dbClusterInstanceClass: medium
+
+
+
+
+# apiVersion: custom-api.example.org/v1alpha1
+# kind: xDatabase
+# metadata:
+#   name: my-rds
+# spec:
+#   region: us-east-1
+#   engine: aurora-postgresql
+#   engineVersion: "10.7"
+
+#   # providerConfigRef:
+#   #   name: default
+#   # classRef:
+#   #   name: db.t2.micro
+#   # engine: mysql
+#   # engineVersion: "5.7"
+#   # storageGB: 20
+#   # backupRetentionPeriod: 7
+#   # multiAZ: false
+#   # publiclyAccessible: false
+#   # username: admin
+#   # passwordSecretRef:
+#   #   namespace: crossplane-system
+#   #   name: my-rds-secret
+#   #   key: password
+#   # parameters:
+#   #   max_connections: "100"
+#   #   wait_timeout: "600"
+#   # claimRef:
+#   #   apiVersion: v1
+#   #   kind: PersistentVolumeClaim
+#   #   name: my-rds-pvc
+#   # patchAndTransformFunctionRef:
+#   #   name: function-patch-and-transform
+#   # patchAndTransformFunctionConfig:
+#   #   env:
+#   #     - name: PATCH
+#   #       value: "true"
+#   #     - name: TRANSFORM
+#   #       value: "true"
+#   # connectionSecretRef:
+#   #   namespace: crossplane-system
+#   #   name: my-rds-connection
+#   #   key: connection
+#   # writeConnectionSecretToRef:
+#   #   namespace: crossplane-system
+#   #   name: my-rds-connection
+#   #   key: connection
+#   # writeConnectionSecretKeys:
+#   #   - endpoint
+#   #   - port
+#   #   - dbname
+#   #   - username
+#   #   - password
+#   #   - engine
+#   #   - engineVersion
+#   #   - storageGB
+#   #   - backupRetentionPeriod
+#   #   - multiAZ
+#   #   - publiclyAccessible
+#   #   - max_connections
+#   #   - wait_timeout
+#   #   - status
+#   #   - arn
+#   #   - dbInstanceStatus
+#   #   - dbInstanceIdentifier
+#   #   - dbInstancePort
+#   #   - dbInstanceEndpointAddress
+#   #   - dbInstanceEndpointPort
+#   #   - dbInstanceEndpointHostname
+#   #   - dbInstanceEndpointPortNumber
+#   #   - dbInstanceEndpointSocketAddress
+#   #   - dbInstanceEndpointSocketHostname
+#   #   - dbInstanceEndpointSocketPortNumber
+#   #   - dbInstanceEndpointSocketAddressFamily
+#   #   - dbInstanceEndpointSocketPort
+#   #   - dbInstanceEndpointSocketPath

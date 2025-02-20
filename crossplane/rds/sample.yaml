@@ -1,0 +1,30 @@
+apiVersion: secretsmanager.aws.upbound.io/v1beta1
+kind: Secret
+metadata:
+  annotations:
+    meta.upbound.io/example-id: secretsmanager/v1beta1/secret
+  labels:
+    testing.upbound.io/example-name: secretsmanager
+  name: example
+spec:
+  forProvider:
+    name: example
+    recoveryWindowInDays: 0
+    region: us-east-1
+---
+apiVersion: secretsmanager.aws.upbound.io/v1beta1
+kind: SecretVersion
+metadata:
+  labels:
+    testing.upbound.io/example-name: secretsmanager
+  name: example
+spec:
+  forProvider:
+    region: us-east-1
+    secretIdSelector:
+      matchLabels:
+        testing.upbound.io/example-name: secretsmanager
+    secretStringSecretRef:
+      key: key1
+      name: test
+      namespace: crossplane-system

@@ -1,0 +1,9 @@
+apiVersion: custom-api.example.org/v1alpha1
+kind: xDatabase
+metadata:
+  name: my-rds
+  # namespace: rds
+spec:
+  region: us-east-1
+  engine: aurora-postgresql
+  engineVersion: "16"

@@ -5,3 +5,4 @@
 .vscode/*
 provider.tf
 **/.DS_Store
+aws-credentials.txt
