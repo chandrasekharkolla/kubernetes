@@ -18,11 +18,23 @@ spec:
           spec:
             type: object
             properties:
+              id:
+                type: string
+              engineType:
+                type: string
+              vpcName:
+                type: string
+              createVPC:
+                type: boolean
               region:
                 type: string            
               engine:
                 type: string
               engineVersion:
+                type: string
+              clusterParameterGroup:
+                type: string
+              dbClusterParameterGroupFamily:
                 type: string
               dbClusterInstanceClass:
                 type: string
@@ -50,6 +62,10 @@ spec:
                 type: string
               autoGeneratePassword:
                 type: boolean
+              databases:
+                type: array
+                items:
+                  type: string
             required:
               - region
               # - engine
@@ -64,6 +80,14 @@ spec:
               # - masterUsername
               # - masterPassword
               # - autoGeneratePassword
+          status:
+            description: A Status represents the observed state
+            properties:
+              share:
+                description: Freeform field containing status information
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+            type: object
   claimNames:
     kind: DatabaseClaim
     plural: databaseclaims

@@ -8,7 +8,9 @@ spec:
   engine: aurora-postgresql
   engineVersion: "16"
   dbClusterInstanceClass: medium
-
+  dbClusterParameterGroupFamily: aurora-postgresql16
+  databases:
+    - mydb
 
 
 

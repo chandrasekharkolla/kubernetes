@@ -1,0 +1,17 @@
+apiVersion: custom-api.example.org/v1alpha1
+kind: DatabaseClaim
+metadata:
+  name: mysql
+  namespace: mysql
+spec:
+  id: lorem
+  vpcName: default
+  engineType: aurora-mysql
+  createVPC: true
+  region: us-east-1
+  # engine: aurora-mysql
+  # engineVersion: 8.0.mysql_aurora.3.05.2
+  dbClusterInstanceClass: medium
+  # dbClusterParameterGroupFamily: aurora-mysql5.7
+  databases:
+    - mydb

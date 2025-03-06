@@ -4,6 +4,14 @@ metadata:
   name: my-rds
   # namespace: rds
 spec:
+  createVPC: true
+  buckets:
+    - mybucket
+    - mybucket2
   region: us-east-1
   engine: aurora-postgresql
   engineVersion: "16"
+  dbClusterInstanceClass: medium
+  dbClusterParameterGroupFamily: aurora-postgresql16
+  databases:
+    - mydb

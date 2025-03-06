@@ -11,3 +11,58 @@ metadata:
   name: provider-aws-secretsmanager
 spec:
   package: xpkg.upbound.io/upbound/provider-aws-secretsmanager:v1
+---
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-kubernetes
+spec:
+  package: xpkg.upbound.io/crossplane-contrib/provider-kubernetes:v0.17.0
+  controllerConfigRef:
+    name: crossplane-provider-kubernetes
+---
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-sql
+spec:
+  package: xpkg.upbound.io/crossplane-contrib/provider-sql:v0.11.0
+# ---
+# apiVersion: pkg.crossplane.io/v1
+# kind: Provider
+# metadata:
+#   name: provider-sql
+# spec:
+#   package: xpkg.upbound.io/crossplane-contrib/provider-sql:v0.11.0
+---
+apiVersion: tf.upbound.io/v1beta1
+kind: ProviderConfig
+metadata:
+  annotations: {}
+  name: default
+spec:
+  configuration: |
+    terraform {
+      # required_providers {
+      #   aws = {
+      #     source = "hashicorp/aws"
+      #     version = "5.6.1"
+      #   }
+      # }
+      backend "kubernetes" {
+        secret_suffix     = "providerconfig-tf-aws"
+        namespace         = "crossplane-system"
+        in_cluster_config = true
+      }
+    }
+    provider "aws" {
+      shared_credentials_files = ["${path.module}/aws-creds.ini"]
+      region = "us-east-1"
+    }
+  credentials:
+    - filename: aws-creds.ini
+      secretRef:
+        key: creds
+        name: aws-secret
+        namespace: crossplane-system
+      source: Secret
